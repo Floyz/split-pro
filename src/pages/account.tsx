@@ -7,6 +7,7 @@ import {
   FileDown,
   HeartHandshakeIcon,
   Languages,
+  Palette,
   Star,
 } from 'lucide-react';
 import type { GetServerSideProps } from 'next';
@@ -21,6 +22,7 @@ import { DownloadAppDrawer } from '~/components/Account/DownloadAppDrawer';
 import { LanguagePicker } from '~/components/Account/LanguagePicker';
 import { SubmitFeedback } from '~/components/Account/SubmitFeedback';
 import { SubscribeNotification } from '~/components/Account/SubscribeNotification';
+import { ThemePicker } from '~/components/Account/ThemePicker';
 import { UpdateName } from '~/components/Account/UpdateDetails';
 import MainLayout from '~/components/Layout/MainLayout';
 import { EntityAvatar } from '~/components/ui/avatar';
@@ -124,6 +126,13 @@ const AccountPage: NextPageWithUser<{
               {t('account.change_language')}
             </AccountButton>
           </LanguagePicker>
+
+          <ThemePicker>
+            <AccountButton>
+              <Palette className="size-5 text-fuchsia-500" />
+              {t('account.change_theme')}
+            </AccountButton>
+          </ThemePicker>
 
           <BankConnection
             bankConnectionEnabled={bankConnectionEnabled}

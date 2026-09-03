@@ -65,6 +65,8 @@ model User {
   friendDefaultSplitsB FriendDefaultSplit[] @relation("FriendDefaultSplitUserB")
   sessions             Session[]
   hiddenFriendIds      Int[]                @default([])
+  themeMode            String               @default("dark")
+  themeAccent          String               @default("cyan")
 
   @@schema("public")
 }

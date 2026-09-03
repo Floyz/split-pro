@@ -9,6 +9,27 @@
       "placeholder": "Select a language",
       "title": "Select a language"
     },
+    "change_theme": "Change theme",
+    "change_theme_details": {
+      "accent": "Accent color",
+      "accents": {
+        "amber": "Amber",
+        "cyan": "Cyan",
+        "emerald": "Emerald",
+        "rose": "Rose",
+        "violet": "Violet"
+      },
+      "messages": {
+        "theme_changed": "Theme updated"
+      },
+      "mode": "Mode",
+      "modes": {
+        "dark": "Dark",
+        "light": "Light",
+        "system": "System"
+      },
+      "title": "Appearance"
+    },
     "download_app": "Download app",
     "download_app_details": {
       "download_as_pwa": "You can download SplitPro as a PWA to your home screen.",
@@ -140,6 +161,7 @@
     "invalid_currency_code": "Invalid currency code {{code}}",
     "invalid_split": "Adjust who owes this expense before saving.",
     "language_change_failed": "Error changing language",
+    "theme_change_failed": "Error changing theme",
     "less_than": "File should be less than {{size}}MB",
     "image_compression_failed": "Image compression failed, trying to upload original file",
     "name_required": "Name is required",

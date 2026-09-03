@@ -9,6 +9,7 @@ import {
   toSortedFriendPair,
 } from '~/lib/defaultSplit';
 import { simplifyDebts } from '~/lib/simplify';
+import { THEME_ACCENTS, THEME_MODES } from '~/lib/theme';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { db } from '~/server/db';
 import { sendFeedbackEmail, sendInviteEmail } from '~/server/mailer';
@@ -153,6 +154,8 @@ export const userRouter = createTRPCRouter({
         obapiProviderId: z.string().optional(),
         bankingId: z.string().optional(),
         preferredLanguage: z.string().optional(),
+        themeMode: z.enum(THEME_MODES).optional(),
+        themeAccent: z.enum(THEME_ACCENTS).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {

@@ -67,6 +67,8 @@ export const UserInput: React.FC<{
         bankingId: null,
         preferredLanguage: '',
         hiddenFriendIds: [],
+        themeMode: 'dark',
+        themeAccent: 'cyan',
       });
     }
   };

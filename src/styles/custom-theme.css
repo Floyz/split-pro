@@ -1,0 +1,115 @@
+/*
+ * Custom fork: user-selectable accent colour + light-mode compatibility layer.
+ *
+ * Imported in `_app.tsx` right after `globals.css`, so these rules come last in the cascade.
+ * Rules outside of any `@layer` beat Tailwind's `@layer utilities`, which lets us remap the
+ * hardcoded `text-gray-*` / `text-cyan-*` utilities upstream uses without touching components.
+ */
+
+/* 1. Accent palette (Tailwind v4 oklch values). `--brand` follows `<html data-accent>`. */
+:root {
+  --brand-cyan: oklch(71.5% 0.143 215.221);
+  --brand-cyan-strong: oklch(60.9% 0.126 221.723);
+  --brand-emerald: oklch(69.6% 0.17 162.48);
+  --brand-emerald-strong: oklch(59.6% 0.145 163.225);
+  --brand-violet: oklch(60.6% 0.25 292.717);
+  --brand-violet-strong: oklch(54.1% 0.281 293.009);
+  --brand-amber: oklch(76.9% 0.188 70.08);
+  --brand-amber-strong: oklch(66.6% 0.179 58.318);
+  --brand-rose: oklch(64.5% 0.246 16.439);
+  --brand-rose-strong: oklch(58.6% 0.253 17.585);
+
+  --brand: var(--brand-cyan);
+  --brand-strong: var(--brand-cyan-strong);
+  --brand-fg: hsl(220.9 39.3% 11%);
+}
+
+:root[data-accent='emerald'] {
+  --brand: var(--brand-emerald);
+  --brand-strong: var(--brand-emerald-strong);
+}
+
+:root[data-accent='violet'] {
+  --brand: var(--brand-violet);
+  --brand-strong: var(--brand-violet-strong);
+  --brand-fg: white;
+}
+
+:root[data-accent='amber'] {
+  --brand: var(--brand-amber);
+  --brand-strong: var(--brand-amber-strong);
+}
+
+:root[data-accent='rose'] {
+  --brand: var(--brand-rose);
+  --brand-strong: var(--brand-rose-strong);
+  --brand-fg: white;
+}
+
+/* 2. Wire the accent into the semantic tokens of both modes. */
+.dark {
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-fg);
+  --ring: var(--brand);
+}
+
+:root:not(.dark) {
+  --primary: var(--brand-strong);
+  --primary-foreground: white;
+  --ring: var(--brand-strong);
+}
+
+/* 3. Upstream hardcodes the cyan brand in a few places: make those follow the accent too. */
+.text-cyan-500 {
+  color: var(--brand);
+}
+
+.bg-cyan-500 {
+  background-color: var(--brand);
+}
+
+.bg-cyan-600 {
+  background-color: var(--brand-strong);
+}
+
+.border-cyan-500 {
+  border-color: var(--brand);
+}
+
+/* 4. Light-mode compatibility for utilities that assume a dark background. */
+:root:not(.dark) {
+  .text-gray-100,
+  .text-gray-200,
+  .text-gray-300 {
+    color: var(--foreground);
+  }
+
+  .text-gray-400,
+  .text-gray-500 {
+    color: var(--muted-foreground);
+  }
+
+  .text-gray-600 {
+    color: hsl(220 8.9% 60%);
+  }
+
+  .border-gray-700,
+  .border-gray-800,
+  .border-gray-900 {
+    border-color: var(--border);
+  }
+
+  .bg-gray-700,
+  .bg-gray-800,
+  .bg-slate-800 {
+    background-color: var(--secondary);
+  }
+
+  .bg-gray-100\/10 {
+    background-color: var(--muted);
+  }
+
+  .text-white {
+    color: var(--foreground);
+  }
+}

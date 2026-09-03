@@ -70,6 +70,8 @@ export const SelectUserOrGroup: React.FC<{
           bankingId: null,
           preferredLanguage: '',
           hiddenFriendIds: [],
+          themeMode: 'dark',
+          themeAccent: 'cyan',
         });
         // Add email to split pro
       }

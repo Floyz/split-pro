@@ -9,6 +9,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
+import { ThemeSync } from '~/components/Account/ThemeSync';
 import { LoadingSpinner } from '~/components/ui/spinner';
 import { ThemeProvider } from 'next-themes';
 import { CurrencyHelpersProvider } from '~/contexts/CurrencyHelpersContext';
@@ -19,6 +20,7 @@ import { api } from '~/utils/api';
 
 import 'react-easy-crop/react-easy-crop.css';
 import '~/styles/globals.css';
+import '~/styles/custom-theme.css';
 
 const poppins = Poppins({ weight: ['200', '300', '400', '500', '600', '700'], subsets: ['latin'] });
 const toastOptions = { duration: 1500 };
@@ -55,7 +57,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <meta name="msapplication-TileColor" content="#2B5797" />
         <meta name="msapplication-tap-highlight" content="no" />
 
-        <meta name="theme-color" content="#030711" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
         <link rel="apple-touch-icon" href="/icons/ios/144.png" />
@@ -177,7 +178,12 @@ const Auth: React.FC<{ Page: NextPageWithUser; pageProps: any }> = ({ Page, page
     );
   }
 
-  return <Page user={data.user} {...pageProps} />;
+  return (
+    <>
+      <ThemeSync user={data.user} />
+      <Page user={data.user} {...pageProps} />
+    </>
+  );
 };
 
 export default api.withTRPC(appWithTranslation(MyApp, i18nConfig));
