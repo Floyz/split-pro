@@ -1,0 +1,121 @@
+# Custom fork workflow: keep the `custom` branch rebased on the latest upstream release tag,
+# then tag `v<upstream>-custom.<N>` and trigger the image build.
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      force_tag:
+        description: 'Create a new -custom.N tag even if the upstream base did not change'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+concurrency: sync-upstream
+
+env:
+  UPSTREAM_REPO: https://github.com/oss-apps/split-pro.git
+  CUSTOM_BRANCH: custom
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout custom branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CUSTOM_BRANCH }}
+          fetch-depth: 0
+
+      - name: Configure git and fetch upstream tags
+        run: |
+          git config user.name "custom-bot"
+          git config user.email "custom-bot@users.noreply.github.com"
+          git remote add upstream "$UPSTREAM_REPO"
+          git fetch upstream --tags --force
+
+      - name: Detect versions
+        id: ver
+        run: |
+          LATEST=$(git tag -l 'v[0-9]*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          BASE=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --exclude '*-custom*' "$CUSTOM_BRANCH")
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "Upstream latest: $LATEST / current base: $BASE"
+
+      - name: Rebase custom onto latest upstream tag
+        if: steps.ver.outputs.latest != steps.ver.outputs.base
+        id: rebase
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.ver.outputs.latest }}
+        run: |
+          if ! git rebase "$LATEST"; then
+            git rebase --abort
+            gh issue create \
+              --title "Rebase of '$CUSTOM_BRANCH' onto $LATEST failed" \
+              --body "Automatic rebase hit conflicts. Resolve locally:
+
+              \`\`\`
+              git fetch upstream --tags
+              git checkout $CUSTOM_BRANCH
+              git rebase $LATEST
+              # resolve conflicts, then
+              git push --force-with-lease origin $CUSTOM_BRANCH
+              \`\`\`
+
+              Then re-run the *Sync upstream* workflow manually."
+            exit 1
+          fi
+          echo "rebased=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install pnpm
+        if: steps.rebase.outputs.rebased == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install Node.js
+        if: steps.rebase.outputs.rebased == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Type-check the rebased tree
+        if: steps.rebase.outputs.rebased == 'true'
+        env:
+          SKIP_ENV_VALIDATION: 'true'
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.ver.outputs.latest }}
+        run: |
+          pnpm install --frozen-lockfile
+          if ! pnpm tsgo --noEmit; then
+            gh issue create \
+              --title "Type-check failed after rebasing '$CUSTOM_BRANCH' onto $LATEST" \
+              --body "The rebase applied cleanly but \`pnpm tsgo --noEmit\` fails. Fix the custom patches locally and push \`$CUSTOM_BRANCH\`, then re-run *Sync upstream*."
+            exit 1
+          fi
+
+      - name: Push rebased branch, tag and trigger publish
+        if: steps.rebase.outputs.rebased == 'true' || inputs.force_tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.ver.outputs.latest }}
+        run: |
+          if [ "${{ steps.rebase.outputs.rebased }}" = "true" ]; then
+            git push --force-with-lease origin "$CUSTOM_BRANCH"
+          fi
+          N=$(( $(git tag -l "$LATEST-custom.*" | wc -l) + 1 ))
+          TAG="$LATEST-custom.$N"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Created $TAG"
+          # A push made with GITHUB_TOKEN does not trigger other workflows: dispatch explicitly.
+          gh workflow run publish-custom.yml --ref "$TAG"
