@@ -41,6 +41,9 @@ const nextConfig = {
   /**
    * Custom fork: proxy the separate `splitpro-stats` service under `/stats` so it shares the
    * origin (and therefore the NextAuth session cookie). Resolved at build time.
+   *
+   * No `locale: false` here: with i18n, Next matches user rewrites against the internally
+   * localised path (`/default/stats`), so the source must carry the automatic locale prefix.
    */
   async rewrites() {
     const statsUrl = process.env.STATS_INTERNAL_URL ?? 'http://splitpro-stats:3100';
@@ -49,7 +52,6 @@ const nextConfig = {
       {
         source: '/stats/:path*',
         destination: `${statsUrl}/stats/:path*`,
-        locale: false,
       },
     ];
   },
