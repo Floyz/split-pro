@@ -7,7 +7,7 @@ export type ThemeAccent = (typeof THEME_ACCENTS)[number];
 export const DEFAULT_THEME_MODE: ThemeMode = 'dark';
 export const DEFAULT_THEME_ACCENT: ThemeAccent = 'cyan';
 
-/** localStorage key read by the anti-flash script in `_document.tsx`. */
+/** Key in localStorage read by the anti-flash script in `_document.tsx`. */
 export const ACCENT_STORAGE_KEY = 'splitpro-accent';
 
 /** Values for the `theme-color` meta tag, mirroring `--background` in `globals.css`. */

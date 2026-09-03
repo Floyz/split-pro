@@ -302,6 +302,12 @@
         "title": "Are you sure you want to archive this group?"
       },
       "archived": "Archived",
+      "banner": "Banner image",
+      "banner_hint": "Recommended ratio 3:1 (for example 1200 × 400 px).",
+      "change_banner": "Change banner",
+      "no_banner": "No banner yet",
+      "remove_banner": "Remove banner",
+      "select_banner": "Select picture",
       "delete_group": "Delete group",
       "delete_group_details": {
         "can_delete": "This action cannot be reversed",
@@ -340,6 +346,7 @@
       "default_balance_currency_cleared": "Default balance currency cleared",
       "default_balance_currency_updated": "Default balance currency updated",
       "balances_recalculated": "Balances recalculated successfully",
+      "banner_updated": "Banner updated",
       "group_archived": "Group archived successfully",
       "group_name_updated": "Updated group details"
     },

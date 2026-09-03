@@ -360,6 +360,7 @@ export const groupRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1),
         image: z.string().nullable().optional(),
+        bannerImage: z.string().nullable().optional(),
         defaultCurrency: z.string().nullable().optional(),
         groupId: z.number(),
       }),
@@ -382,6 +383,7 @@ export const groupRouter = createTRPCRouter({
         data: {
           name: input.name,
           image: input.image,
+          bannerImage: input.bannerImage,
           defaultCurrency: input.defaultCurrency,
         },
       });

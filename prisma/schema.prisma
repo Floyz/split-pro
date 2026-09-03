@@ -101,6 +101,7 @@ model Group {
   publicId          String             @unique
   name              String
   image             String?
+  bannerImage       String?
   userId            Int
   defaultCurrency   String?
   createdAt         DateTime           @default(now())

@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { BalanceList } from '~/components/Expense/BalanceList';
 import { ExpenseList } from '~/components/Expense/ExpenseList';
 import AddMembers from '~/components/group/AddMembers';
+import { GroupBanner } from '~/components/group/GroupBanner';
 import GroupMyBalance from '~/components/group/GroupMyBalance';
 import NoMembers from '~/components/group/NoMembers';
 import MainLayout from '~/components/Layout/MainLayout';
@@ -483,13 +484,7 @@ const BalancePage: NextPageWithUser<{
           </div>
         }
         header={
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => router.replace(`/groups`)} className="mr-2 p-0">
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-            <EntityAvatar entity={groupDetailQuery.data} size={30} />
-            <p className="text-lg">{groupDetailQuery.data?.name}</p>
-          </div>
+          <GroupBanner group={groupDetailQuery.data} onSaved={() => groupDetailQuery.refetch()} />
         }
         loading={groupDetailQuery.isPending}
       >

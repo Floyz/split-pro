@@ -27,6 +27,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   actions,
   hideAppBar,
   title,
+  header,
   loading,
 }) => {
   const { t } = useTranslation();
@@ -83,6 +84,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           className="w-full overflow-auto lg:border-x lg:border-gray-900 lg:px-6"
           id="mainlayout"
         >
+          {header}
           {title ? (
             <div className="mb-2 flex items-center justify-between px-4 py-4">
               <div className="text-3xl font-bold text-gray-200">{title}</div>
