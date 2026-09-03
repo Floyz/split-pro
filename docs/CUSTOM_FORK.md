@@ -18,6 +18,10 @@ touch `package.json` / `pnpm-lock.yaml`; English i18n keys only (`public/locales
 
 ## Upstream sync
 
+**`custom` must be the default branch of the fork** (Settings → General → Default branch).
+GitHub only runs `schedule` triggers and offers the "Run workflow" button for workflows that live
+on the default branch; `main` is a plain mirror of upstream without these workflows.
+
 `sync-upstream.yml` runs daily: fetches upstream tags, rebases `custom` onto the newest `vX.Y.Z`,
 type-checks, pushes, tags `vX.Y.Z-custom.N` and dispatches `publish-custom.yml`. On conflict it
 opens an issue with the manual steps. Disable the upstream `publish.yaml` / `postgres.yaml`
