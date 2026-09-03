@@ -6,6 +6,8 @@ export function middleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith('/_next') ||
     req.nextUrl.pathname.includes('/api/') ||
+    // Custom fork: /stats is proxied to a separate service (next.config.js rewrite), never localised.
+    req.nextUrl.pathname.startsWith('/stats') ||
     PUBLIC_FILE.test(req.nextUrl.pathname)
   ) {
     return;

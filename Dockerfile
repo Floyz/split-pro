@@ -14,6 +14,10 @@ ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
 ENV NEXT_PUBLIC_GIT_SHA=${GIT_SHA}
 
+# Custom fork: internal URL of the splitpro-stats service proxied under /stats (see next.config.js).
+ARG STATS_INTERNAL_URL=http://splitpro-stats:3100
+ENV STATS_INTERNAL_URL=${STATS_INTERNAL_URL}
+
 RUN apk update && apk add --no-cache libc6-compat
 
 WORKDIR /app

@@ -195,6 +195,13 @@ const BalancePage: NextPageWithUser<{
                     </p>
                   </div>
                 )}
+                <div className="mt-8">
+                  <Button variant="link" className="px-0" asChild>
+                    <a href={`/stats?groupId=${groupId}`}>
+                      {t('group_details.group_statistics.open_stats')}
+                    </a>
+                  </Button>
+                </div>
               </>
             </AppDrawer>
             <AppDrawer

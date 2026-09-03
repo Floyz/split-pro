@@ -74,6 +74,7 @@
         "notification_granted": "You will receive notifications now"
       }
     },
+    "open_stats": "Statistics",
     "star_on_github": "Star us on GitHub",
     "submit_feedback": "Submit feedback",
     "submit_feedback_details": {
@@ -337,6 +338,7 @@
     },
     "group_statistics": {
       "first_expense": "First expense",
+      "open_stats": "Open detailed statistics",
       "title": "Group statistics",
       "total_expenses": "Total expenses"
     },

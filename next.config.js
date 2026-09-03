@@ -38,6 +38,21 @@ const nextConfig = {
       },
     ],
   },
+  /**
+   * Custom fork: proxy the separate `splitpro-stats` service under `/stats` so it shares the
+   * origin (and therefore the NextAuth session cookie). Resolved at build time.
+   */
+  async rewrites() {
+    const statsUrl = process.env.STATS_INTERNAL_URL ?? 'http://splitpro-stats:3100';
+
+    return [
+      {
+        source: '/stats/:path*',
+        destination: `${statsUrl}/stats/:path*`,
+        locale: false,
+      },
+    ];
+  },
 };
 
 const withSerwist = withSerwistInit({

@@ -9,6 +9,7 @@ import {
   Languages,
   Palette,
   Star,
+  TrendingUp,
 } from 'lucide-react';
 import type { GetServerSideProps } from 'next';
 import { signOut } from 'next-auth/react';
@@ -57,6 +58,11 @@ const AccountPage: NextPageWithUser<{
   setMaxUploadFileSizeMB(maxUploadFileSizeMB);
 
   const [downloading, setDownloading] = useState(false);
+
+  // Custom fork: /stats is served by a separate service (Next.js rewrite), so do a full navigation.
+  const openStats = useCallback(() => {
+    window.location.assign('/stats');
+  }, []);
 
   const downloadData = useCallback(async () => {
     setDownloading(true);
@@ -179,6 +185,11 @@ const AccountPage: NextPageWithUser<{
           <AccountButton href="/import-splitwise">
             <DownloadCloud className="size-5 text-violet-500" />
             {t('account.import_from_splitwise')}
+          </AccountButton>
+
+          <AccountButton onClick={openStats}>
+            <TrendingUp className="size-5 text-cyan-500" />
+            {t('account.open_stats')}
           </AccountButton>
 
           <DebugInfo>
