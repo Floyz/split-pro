@@ -22,6 +22,12 @@ concurrency: sync-upstream
 env:
   UPSTREAM_REPO: https://github.com/oss-apps/split-pro.git
   CUSTOM_BRANCH: custom
+  # `gh` would otherwise pick the `upstream` remote added below as the target repository.
+  GH_REPO: ${{ github.repository }}
+  # SYNC_TOKEN: fine-grained PAT (Contents, Workflows, Actions, Issues: read/write). Required for
+  # rebases: GITHUB_TOKEN cannot push commits that touch .github/workflows/*.
+  GH_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}
+  HAS_PAT: ${{ secrets.SYNC_TOKEN != '' }}
 
 jobs:
   sync:
@@ -32,6 +38,7 @@ jobs:
         with:
           ref: ${{ env.CUSTOM_BRANCH }}
           fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
 
       - name: Configure git and fetch upstream tags
         run: |
@@ -53,9 +60,14 @@ jobs:
         if: steps.ver.outputs.latest != steps.ver.outputs.base
         id: rebase
         env:
-          GH_TOKEN: ${{ github.token }}
           LATEST: ${{ steps.ver.outputs.latest }}
         run: |
+          if [ "$HAS_PAT" != "true" ]; then
+            gh issue create \
+              --title "Cannot rebase '$CUSTOM_BRANCH' onto $LATEST: SYNC_TOKEN secret missing" \
+              --body "GITHUB_TOKEN cannot push commits that modify .github/workflows/*. Add a fine-grained personal access token as the repository secret \`SYNC_TOKEN\` (Contents, Workflows, Actions, Issues: read/write) and re-run *Sync upstream*."
+            exit 1
+          fi
           if ! git rebase "$LATEST"; then
             git rebase --abort
             gh issue create \
@@ -92,7 +104,6 @@ jobs:
         if: steps.rebase.outputs.rebased == 'true'
         env:
           SKIP_ENV_VALIDATION: 'true'
-          GH_TOKEN: ${{ github.token }}
           LATEST: ${{ steps.ver.outputs.latest }}
         run: |
           pnpm install --frozen-lockfile
@@ -106,16 +117,18 @@ jobs:
       - name: Push rebased branch, tag and trigger publish
         if: steps.rebase.outputs.rebased == 'true' || inputs.force_tag
         env:
-          GH_TOKEN: ${{ github.token }}
           LATEST: ${{ steps.ver.outputs.latest }}
         run: |
           if [ "${{ steps.rebase.outputs.rebased }}" = "true" ]; then
             git push --force-with-lease origin "$CUSTOM_BRANCH"
           fi
+          git fetch origin --tags --force
           N=$(( $(git tag -l "$LATEST-custom.*" | wc -l) + 1 ))
           TAG="$LATEST-custom.$N"
           git tag "$TAG"
           git push origin "$TAG"
           echo "Created $TAG"
-          # A push made with GITHUB_TOKEN does not trigger other workflows: dispatch explicitly.
-          gh workflow run publish-custom.yml --ref "$TAG"
+          # A push made with GITHUB_TOKEN does not trigger other workflows; a PAT push does.
+          if [ "$HAS_PAT" != "true" ]; then
+            gh workflow run publish-custom.yml --ref "$TAG"
+          fi

@@ -18,6 +18,12 @@ touch `package.json` / `pnpm-lock.yaml`; English i18n keys only (`public/locales
 
 ## Upstream sync
 
+Create a fine-grained personal access token limited to this repository with **Contents,
+Workflows, Actions and Issues: read/write**, and store it as the repository secret `SYNC_TOKEN`
+(Settings → Secrets and variables → Actions). Without it the workflow can still tag and publish the
+current commit, but it cannot push a rebase: `GITHUB_TOKEN` is never allowed to push commits that
+modify `.github/workflows/*`.
+
 **`custom` must be the default branch of the fork** (Settings → General → Default branch).
 GitHub only runs `schedule` triggers and offers the "Run workflow" button for workflows that live
 on the default branch; `main` is a plain mirror of upstream without these workflows.
