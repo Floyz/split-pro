@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import React from 'react';
 import { LoadingSpinner } from '../ui/spinner';
+import { PageHeader } from './PageHeader';
 
 interface MainLayoutProps {
   title?: React.ReactNode;
@@ -85,12 +86,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           id="mainlayout"
         >
           {header}
-          {title ? (
-            <div className="mb-2 flex items-center justify-between px-4 py-4">
-              <div className="text-3xl font-bold text-gray-200">{title}</div>
-              {actions}
-            </div>
-          ) : null}
+          <PageHeader title={title} actions={actions} currentPath={currentPath} />
           <div className="px-4">
             {loading ? (
               <div className="mt-10 flex justify-center">

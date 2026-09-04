@@ -11,6 +11,7 @@ This branch (`custom`) carries a few patches on top of upstream
 | `custom(ci)`     | `.github/workflows/sync-upstream.yml` (daily rebase on the latest upstream tag) and `publish-custom.yml` (build + push to GHCR) |
 | `custom(theme)`  | Per-user colour mode + accent (`User.themeMode`, `User.themeAccent`), `ThemePicker` in Account, `src/styles/custom-theme.css`   |
 | `custom(banner)` | Group banner image (`Group.bannerImage`), `GroupBanner` component, `MainLayout` renders its `header` prop                       |
+| `custom(polish)` | Page header band with tab icon (`PageHeader`), `HeroCard` + `BalanceHeroCard` on `/balances` and the group summary              |
 | `custom(link)`   | `/stats` proxied to the separate `splitpro-stats` service (rewrite + middleware skip), entries in Account and group statistics  |
 
 Rules: prefer new files; edit upstream files by single-line insertions at stable anchors; never

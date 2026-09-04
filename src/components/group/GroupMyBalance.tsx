@@ -1,7 +1,9 @@
 import { type BalanceView, type User } from '@prisma/client';
+import { Scale } from 'lucide-react';
 import React, { useMemo } from 'react';
 
 import { CumulatedBalances } from '~/components/Expense/CumulatedBalances';
+import { HeroCard } from '~/components/HeroCard';
 import { useTranslationWithUtils } from '~/hooks/useTranslationWithUtils';
 import { BigMath } from '~/utils/numbers';
 
@@ -68,9 +70,11 @@ const GroupMyBalance: React.FC<GroupMyBalanceProps> = ({
   );
 
   return (
-    <div className="flex gap-2">
+    <HeroCard icon={Scale} tone={0 === cumulatedBalances.length ? 'muted' : 'accent'}>
       <div className="flex flex-col gap-2">
-        <CumulatedBalances entityId={groupId} entityType="group" balances={cumulatedBalances} />
+        <div className="text-lg font-semibold">
+          <CumulatedBalances entityId={groupId} entityType="group" balances={cumulatedBalances} />
+        </div>
 
         {Object.entries(friendBalances)
           .slice(0, 2)
@@ -97,7 +101,7 @@ const GroupMyBalance: React.FC<GroupMyBalanceProps> = ({
           </div>
         ) : null}
       </div>
-    </div>
+    </HeroCard>
   );
 };
 

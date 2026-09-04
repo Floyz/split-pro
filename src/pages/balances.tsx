@@ -8,13 +8,12 @@ import { BalanceEntry } from '~/components/Expense/BalanceEntry';
 import MainLayout from '~/components/Layout/MainLayout';
 import { NotificationModal } from '~/components/NotificationModal';
 import { Button } from '~/components/ui/button';
-import { ConvertibleBalance } from '~/components/Expense/ConvertibleBalance';
+import { BalanceHeroCard } from '~/components/Expense/BalanceHeroCard';
 import { useIsPwa } from '~/hooks/useIsPwa';
 import { useTranslationWithUtils } from '~/hooks/useTranslationWithUtils';
 import { type NextPageWithUser } from '~/types';
 import { api } from '~/utils/api';
 import { withI18nStaticProps } from '~/utils/i18n/server';
-import { cn } from '~/lib/utils';
 import { isCurrencyCode } from '~/lib/currency';
 import { useCurrencyPreferenceStore } from '~/store/currencyPreferenceStore';
 
@@ -24,7 +23,6 @@ const BalancePage: NextPageWithUser = ({ user }) => {
   const balanceQuery = api.expense.getBalances.useQuery();
   const cumulatedQuery = api.expense.getCumulatedBalances.useQuery();
 
-  const selectedCurrency = useCurrencyPreferenceStore((s) => s.getPreference());
   const setUserDefaultCurrency = useCurrencyPreferenceStore((s) => s.setUserDefaultCurrency);
 
   useEffect(() => {
@@ -72,32 +70,11 @@ const BalancePage: NextPageWithUser = ({ user }) => {
         loading={cumulatedQuery.isPending}
       >
         <NotificationModal />
-        <div className="mx-4 flex items-stretch justify-between gap-4">
-          {selectedCurrency && isCurrencyCode(selectedCurrency) ? (
-            <CumulatedBalanceDisplay
-              prefix={`${t('ui.total_balance')}`}
-              cumulatedBalances={[
-                cumulatedQuery.data?.youOwe ?? [],
-                cumulatedQuery.data?.youGet ?? [],
-              ].flat()}
-              currencies={allNonZeroCurrencies}
-              className="mx-auto"
-            />
-          ) : (
-            <>
-              <CumulatedBalanceDisplay
-                prefix={`${t('actors.you')} ${t('ui.expense.you.owe')}`}
-                cumulatedBalances={cumulatedQuery.data?.youOwe}
-                currencies={allNonZeroCurrencies}
-              />
-              <CumulatedBalanceDisplay
-                prefix={`${t('actors.you')} ${t('ui.expense.you.lent')}`}
-                cumulatedBalances={cumulatedQuery.data?.youGet}
-                currencies={allNonZeroCurrencies}
-              />
-            </>
-          )}
-        </div>
+        <BalanceHeroCard
+          youOwe={cumulatedQuery.data?.youOwe}
+          youGet={cumulatedQuery.data?.youGet}
+          currencies={allNonZeroCurrencies}
+        />
 
         <div className="mt-5 flex flex-col gap-8 pb-36">
           {balanceQuery.data?.balances.map((balance) => (
@@ -129,36 +106,6 @@ const BalancePage: NextPageWithUser = ({ user }) => {
         </div>
       </MainLayout>
     </>
-  );
-};
-
-const CumulatedBalanceDisplay: React.FC<{
-  prefix?: string;
-  className?: string;
-  cumulatedBalances?: { currency: string; amount: bigint }[];
-  currencies: string[];
-}> = ({ prefix = '', className = '', cumulatedBalances, currencies }) => {
-  if (!cumulatedBalances || cumulatedBalances.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className={cn('w-1/2 rounded-2xl border px-4 py-2', className)}>
-      <div className="mt-2 px-1">
-        <div className="flex items-center justify-center gap-2 text-center">
-          <p className="text-sm">{prefix}</p>
-        </div>
-      </div>
-      <div className="mt-4 mb-2 flex flex-wrap justify-center gap-1">
-        <ConvertibleBalance
-          balances={cumulatedBalances}
-          showMultiOption
-          className="flex-wrap"
-          overrideCurrencies={currencies}
-          forceShowButton={currencies.length > 1}
-        />
-      </div>
-    </div>
   );
 };
 
