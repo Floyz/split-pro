@@ -3,6 +3,10 @@
 name: Sync upstream
 
 on:
+  # Every push to `custom` publishes a new image; the daily schedule follows upstream releases.
+  push:
+    branches:
+      - custom
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
@@ -115,18 +119,25 @@ jobs:
           fi
 
       - name: Push rebased branch, tag and trigger publish
-        if: steps.rebase.outputs.rebased == 'true' || inputs.force_tag
+        if: steps.rebase.outputs.rebased == 'true' || inputs.force_tag || github.event_name == 'push'
         env:
           LATEST: ${{ steps.ver.outputs.latest }}
         run: |
-          if [ "${{ steps.rebase.outputs.rebased }}" = "true" ]; then
-            git push --force-with-lease origin "$CUSTOM_BRANCH"
-          fi
           git fetch origin --tags --force
+          # The branch push made below (after a rebase) re-triggers this workflow: its HEAD is
+          # already tagged, so that run must stop here instead of publishing twice.
+          if [ "${{ github.event_name }}" = "push" ] && git tag --points-at HEAD | grep -q -- '-custom\.'; then
+            echo "HEAD is already tagged: nothing to do"
+            exit 0
+          fi
           N=$(( $(git tag -l "$LATEST-custom.*" | wc -l) + 1 ))
           TAG="$LATEST-custom.$N"
           git tag "$TAG"
+          # Tag first (uploads the rebased commits too), then move the branch.
           git push origin "$TAG"
+          if [ "${{ steps.rebase.outputs.rebased }}" = "true" ]; then
+            git push --force-with-lease origin "$CUSTOM_BRANCH"
+          fi
           echo "Created $TAG"
           # A push made with GITHUB_TOKEN does not trigger other workflows; a PAT push does.
           if [ "$HAS_PAT" != "true" ]; then

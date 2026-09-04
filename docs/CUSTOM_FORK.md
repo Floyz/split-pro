@@ -29,8 +29,10 @@ modify `.github/workflows/*`.
 GitHub only runs `schedule` triggers and offers the "Run workflow" button for workflows that live
 on the default branch; `main` is a plain mirror of upstream without these workflows.
 
-`sync-upstream.yml` runs daily: fetches upstream tags, rebases `custom` onto the newest `vX.Y.Z`,
-type-checks, pushes, tags `vX.Y.Z-custom.N` and dispatches `publish-custom.yml`. On conflict it
+`sync-upstream.yml` runs on every push to `custom` and daily. On a push it simply tags the new
+HEAD `vX.Y.Z-custom.N`, which publishes the image. Daily it fetches upstream tags, rebases `custom`
+onto the newest `vX.Y.Z`, type-checks, tags and pushes (that push re-triggers the workflow, which
+sees the tag on HEAD and stops). On conflict it
 opens an issue with the manual steps. Disable the upstream `publish.yaml` / `postgres.yaml`
 workflows in the fork's Actions tab (they target runners a fork does not have).
 
@@ -43,7 +45,7 @@ git rebase vX.Y.Z          # resolve, then
 git push --force-with-lease origin custom
 ```
 
-Then run _Sync upstream_ manually (check "force_tag") to publish a new image.
+The push publishes a new image automatically.
 
 ## Local checks (same as CI)
 
