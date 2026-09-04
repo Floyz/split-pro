@@ -35,6 +35,7 @@ export const CumulatedBalances: React.FC<{
           entityType={entityType}
           cumulatedBalances={balances}
           currencies={allNonZeroCurrencies}
+          signed
         />
       ) : (
         <>
@@ -70,6 +71,7 @@ const CumulatedBalanceDisplay: React.FC<{
   cumulatedBalances?: { currency: string; amount: bigint }[];
   forceShowButton?: boolean;
   currencies: string[];
+  signed?: boolean;
 }> = ({
   prefix = '',
   entityId,
@@ -78,6 +80,7 @@ const CumulatedBalanceDisplay: React.FC<{
   cumulatedBalances,
   forceShowButton = false,
   currencies,
+  signed = false,
 }) => {
   if (!cumulatedBalances || cumulatedBalances.length === 0) {
     return null;
@@ -93,6 +96,7 @@ const CumulatedBalanceDisplay: React.FC<{
         forceShowButton={forceShowButton}
         showMultiOption
         overrideCurrencies={currencies}
+        signed={signed}
       />
     </div>
   );

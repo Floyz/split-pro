@@ -396,6 +396,10 @@
   "ui": {
     "added_by": "Ajoutée par",
     "and": "et",
+    "balance_sentence": {
+      "user_owes_you": "{{name}} te doit",
+      "you_owe_user": "Tu dois à {{name}}"
+    },
     "balance": "solde",
     "balances": "soldes",
     "delete": "Supprimer",

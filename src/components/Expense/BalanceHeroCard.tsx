@@ -42,6 +42,7 @@ export const BalanceHeroCard: React.FC<BalanceHeroCardProps> = ({
         <ConvertibleBalance
           balances={[...youOwe, ...youGet]}
           showMultiOption
+          signed
           className={AMOUNT_CLASSES}
           overrideCurrencies={currencies}
           forceShowButton={forceShowButton}

@@ -435,6 +435,10 @@
   "ui": {
     "added_by": "Added by",
     "and": "and",
+    "balance_sentence": {
+      "user_owes_you": "{{name}} owes you",
+      "you_owe_user": "You owe {{name}}"
+    },
     "balance": "balance",
     "balances": "balances",
     "delete": "Delete",

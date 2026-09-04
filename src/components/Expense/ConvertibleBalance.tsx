@@ -24,6 +24,8 @@ interface ConvertibleBalanceProps {
   showMultiOption?: boolean;
   forceShowButton?: boolean;
   withText?: boolean;
+  /** Custom fork: keep the minus sign (for a net "total balance" without explanatory text). */
+  signed?: boolean;
   entityId?: number;
   entityType?: 'group';
 }
@@ -35,6 +37,7 @@ export const ConvertibleBalance: React.FC<ConvertibleBalanceProps> = ({
   showMultiOption = false,
   forceShowButton = false,
   withText = false,
+  signed = false,
   entityId,
   entityType,
 }) => {
@@ -174,6 +177,7 @@ export const ConvertibleBalance: React.FC<ConvertibleBalanceProps> = ({
     return (
       <AmountDisplay
         withText={withText}
+        signed={signed}
         className={className}
         amount={balance.amount}
         currency={balance.currency}
@@ -231,6 +235,7 @@ export const ConvertibleBalance: React.FC<ConvertibleBalanceProps> = ({
             <React.Fragment key={balance.currency}>
               <AmountDisplay
                 withText={withText}
+                signed={signed}
                 amount={balance.amount}
                 currency={balance.currency}
               />
@@ -244,6 +249,7 @@ export const ConvertibleBalance: React.FC<ConvertibleBalanceProps> = ({
         ) : (
           <AmountDisplay
             withText={withText}
+            signed={signed}
             className={className}
             amount={totalConvertedAmount ? totalConvertedAmount : balances[0]!.amount}
             currency={totalConvertedAmount ? selectedCurrency : balances[0]!.currency}
@@ -262,8 +268,9 @@ const AmountDisplay: React.FC<{
   amount: bigint;
   currency: string;
   withText?: boolean;
+  signed?: boolean;
   hasMore?: boolean;
-}> = ({ className = '', amount, currency, withText = false, hasMore = false }) => {
+}> = ({ className = '', amount, currency, withText = false, signed = false, hasMore = false }) => {
   const { t, getCurrencyHelpersCached } = useTranslationWithUtils();
 
   if (amount === 0n) {
@@ -285,7 +292,7 @@ const AmountDisplay: React.FC<{
         </div>
       )}
       <span className={cn(isPositive ? 'text-positive' : 'text-negative', className)}>
-        {getCurrencyHelpersCached(currency).toUIString(amount)}
+        {getCurrencyHelpersCached(currency).toUIString(amount, signed)}
         {hasMore && `+`}
       </span>
     </div>
